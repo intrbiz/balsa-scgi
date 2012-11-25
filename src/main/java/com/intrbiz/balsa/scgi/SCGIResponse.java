@@ -75,65 +75,71 @@ public class SCGIResponse
     /**
      * The response status
      */
-    public static final class Status
+    public static enum Status
     {
-        /**
-         * The response ok
-         */
-        public static final Status OK = new Status(200, "Ok");
-
-        /**
-         * The response is a redirect
-         */
-        public static final Status REDIRECT = new Status(302, "Hey, look over there");
-
-        /**
-         * The response is a redirect (permanent)
-         */
-        public static final Status REDIRECT_PERMANENT = new Status(301, "Hey, look over there");
-
-        /**
-         * The response is a not found error
-         */
-        public static final Status NOT_FOUND = new Status(404, "Opps, lost that one");
-
-        /**
-         * The response is a internal server error
-         */
-        public static final Status INTERNAL_ERROR = new Status(500, "Opps");
-
-        /**
-         * The status code
-         */
-        public final int code;
-
-        /**
-         * The status message
-         */
-        public final String message;
-
-        public Status(int code, String message)
+        /* 1xx */
+        Continue(100, "Continue"),
+        SwitchingProtocols(101, "Switching Protocols"),
+        /* 2xx */
+        OK(200, "OK"),
+        Created(201, "Created"),
+        Accepted(202, "Accepted"),
+        NonAuthoritativeInformation(203, "Non-Authoritative Information"),
+        NoContent(204, "No Content"),
+        ResetContent(205, "Reset Content"),
+        PartialContent(206, ""),
+        /* 3xx */
+        MultipleChoices(300, "Multiple Choices"),
+        MovedPermanently(301, "Moved Permanently"),
+        Found(302, "Found"),
+        SeeOther(303, "See Other"),
+        NotModified(304, "Not Modified"),
+        UseProxy(305, "Use Proxy"),
+        TemporaryRedirect(307, "Temporary Redirect"),
+        /* 4xx */
+        BadRequest(400, "Bad Request"),
+        Unauthorized(401, "Unauthorized"),
+        PaymentRequired(402, "Payment Required"),
+        Forbidden(403, "Forbidden"),
+        NotFound(404, "Not Found"),
+        MethodNotAllowed(405, "Method Not Allowed"),
+        NotAcceptable(406, "Not Acceptable"),
+        ProxyAuthenticationRequired(407, "Proxy Authentication Required"),
+        RequestTimeout(408, "Request Timeout"),
+        Conflict(409, "Conflict"),
+        Gone(410, "Gone"),
+        LengthRequired(411, "Length Required"),
+        PreconditionFailed(412, "Precondition Failed"),
+        RequestEntityTooLarge(413, "Request Entity Too Large"),
+        RequestURITooLong(414, "Request-URI Too Long"),
+        UnsupportedMediaType(415, "Unsupported Media Type"),
+        RequestedRangeNotSatisfiable(416, "Requested Range Not Satisfiable"),
+        ExpectationFailed(417, "Expectation Failed"),
+        /* 5xx */
+        InternalServerError(500, "Internal Server Error"),
+        NotImplemented(501, "Not Implemented"),
+        BadGateway(502, "Bad Gateway"),
+        ServiceUnavailable(503, "Service Unavailable"),
+        GatewayTimeout(504, "Gateway Timeout"),
+        HTTPVersionNotSupported(505, "HTTP Version Not Supported");
+        
+        private final int    code;
+        private final String message;
+        
+        private Status(int code, String message)
         {
             this.code = code;
             this.message = message;
         }
-
-        public int hashCode()
+        
+        public int getCode()
         {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + code;
-            return result;
+            return this.code;
         }
-
-        public boolean equals(Object obj)
+        
+        public String getMessage()
         {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            Status other = (Status) obj;
-            if (code != other.code) return false;
-            return true;
+            return this.message;
         }
     }
 
@@ -228,20 +234,20 @@ public class SCGIResponse
 
     public void notFound()
     {
-        this.status(Status.NOT_FOUND);
+        this.status(Status.NotFound);
     }
 
     public void error()
     {
-        this.status(Status.INTERNAL_ERROR);
+        this.status(Status.InternalServerError);
     }
 
     public void redirect(boolean permanent)
     {
         if (permanent)
-            this.status(Status.REDIRECT_PERMANENT);
+            this.status(Status.MovedPermanently);
         else
-            this.status(Status.REDIRECT);
+            this.status(Status.Found);
     }
 
     public Charset getCharset()
@@ -346,9 +352,9 @@ public class SCGIResponse
             Writer headerWriter = new BufferedWriter(new OutputStreamWriter(this.output, Charsets.SCGI), 1024);
             // the status
             headerWriter.write("Status: ");
-            headerWriter.write(String.valueOf(this.getStatus().code));
+            headerWriter.write(String.valueOf(this.getStatus().getCode()));
             headerWriter.write(" ");
-            headerWriter.write(this.getStatus().message);
+            headerWriter.write(this.getStatus().getMessage());
             // the content type
             headerWriter.write("\r\nContent-Type: ");
             headerWriter.write(this.getContentType());

@@ -160,16 +160,16 @@ public class SCGIListener implements Runnable
     {
         try
         {
-            this.listenerThread = new Thread(new ThreadGroup("Balsa"), this, "BalsaListener");
+            this.listenerThread = new Thread(new ThreadGroup("SCGI"), this, "SCGIListener");
             // factory
             this.workerFactory = new ThreadFactory() {
                 
                 private int count = 0;
-                private ThreadGroup group = new ThreadGroup("Balsa");
+                private ThreadGroup group = new ThreadGroup("SCGI");
                 
                 public Thread newThread(Runnable r)
                 {
-                    return new Thread(this.group, r, "BalsaWorker-" + (++count));
+                    return new Thread(this.group, r, "SCGIWorker-" + (++count));
                 }
             };
             // runqueue
