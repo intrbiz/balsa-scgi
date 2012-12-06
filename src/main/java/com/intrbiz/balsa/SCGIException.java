@@ -27,11 +27,13 @@
 
 package com.intrbiz.balsa;
 
+import java.io.IOException;
+
 
 /**
  * Some fault with the SCGI listener
  */
-public class SCGIException extends Exception
+public class SCGIException extends IOException
 {
     private static final long serialVersionUID = 1L;
 
