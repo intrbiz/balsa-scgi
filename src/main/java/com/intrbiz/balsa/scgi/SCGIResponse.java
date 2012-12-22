@@ -49,7 +49,7 @@ public class SCGIResponse
     /**
      * Common charsets
      */
-    public static final class Charsets
+    public static class Charsets
     {
         public static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -59,7 +59,7 @@ public class SCGIResponse
     /**
      * Common content types
      */
-    public static final class ContentTypes
+    public static class ContentTypes
     {
         public static final String TEXT_PLAIN = "text/plain";
 
@@ -143,12 +143,12 @@ public class SCGIResponse
         }
     }
 
-    public static final class CacheControl
+    public static class CacheControl
     {
         public static final String NO_CACHE = "no-cache, no-store, max-age=0, must-revalidate";
     }
 
-    public static final class Expires
+    public static class Expires
     {
         public static final String EXPIRED = "Thu, 01 Jan 1970 00:00:00 GMT";
     }
