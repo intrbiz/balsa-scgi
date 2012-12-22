@@ -30,6 +30,7 @@ package com.intrbiz.balsa.scgi;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -400,8 +401,37 @@ public class SCGIRequest
     public String dumpRequest()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.getRequestMethod()).append(" ").append(this.getPathInfo()).append("\r\n");
-        sb.append("Parameters:\r\n");
+        sb.append(this.getRequestMethod()).append(" ").append(this.getPathInfo()).append("\r\n\r\n");
+        //
+        sb.append("CONTENT_LENGTH: ").append(this.contentLength).append("\r\n");
+        sb.append("CONTENT_TYPE: ").append(this.contentType).append("\r\n");
+        sb.append("SCGI: ").append(this.version).append("\r\n");
+        sb.append("SERVER_SOFTWARE: ").append(this.serverSoftware).append("\r\n");
+        sb.append("SERVER_NAME: ").append(this.serverName).append("\r\n");
+        sb.append("SERVER_ADDR: ").append(this.serverAddress).append("\r\n");
+        sb.append("SERVER_PORT: ").append(this.serverPort).append("\r\n");
+        sb.append("SERVER_PROTOCOL: ").append(this.serverProtocol).append("\r\n");
+        sb.append("REMOTE_ADDR: ").append(this.remoteAddress).append("\r\n");
+        sb.append("REMOTE_PORT: ").append(this.remotePort).append("\r\n");
+        sb.append("REQUEST_METHOD: ").append(this.requestMethod).append("\r\n");
+        sb.append("REQUEST_URI: ").append(this.requestUri).append("\r\n");
+        sb.append("PATH_INFO: ").append(this.pathInfo).append("\r\n");
+        sb.append("QUERY_STRING: ").append(this.queryString).append("\r\n");
+        sb.append("SCRIPT_NAME: ").append(this.scriptName).append("\r\n");
+        sb.append("SCRIPT_FILENAME: ").append(this.scriptFileName).append("\r\n");
+        sb.append("DOCUMENT_ROOT: ").append(this.documentRoot).append("\r\n");
+        //
+        sb.append("\r\nVariables:\r\n");
+        for (Entry<String, String> var : this.getVariables().entrySet())
+        {
+            sb.append("\t").append(var.getKey()).append(" => ").append(var.getValue()).append("\r\n");
+        }
+        sb.append("\r\nHeaders:\r\n");
+        for (Entry<String, String> hd : this.getHeaders().entrySet())
+        {
+            sb.append("\t").append(hd.getKey()).append(" => ").append(hd.getValue()).append("\r\n");
+        }
+        sb.append("\r\nParameters:\r\n");
         for (Parameter p : this.getParameterValues())
         {
             if (p instanceof StringParameter)
