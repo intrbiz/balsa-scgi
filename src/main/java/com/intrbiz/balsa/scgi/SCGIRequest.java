@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
+import com.intrbiz.balsa.util.LengthLimitedSocketInputStream;
 
 
 /**
@@ -46,7 +47,7 @@ import com.intrbiz.balsa.parameter.StringParameter;
  * 
  * It pulls information out of the SCGI headers.
  * 
- * It allows access to the input and output streams, but provides no processing of them
+ * It allows access to the input stream, but provides no processing of them
  * 
  */
 public class SCGIRequest
@@ -96,6 +97,8 @@ public class SCGIRequest
     private Map<String, String> cookies = new TreeMap<String, String>();
 
     private InputStream input;
+    
+    private LengthLimitedSocketInputStream bodyInput = null;
 
     private Object body;
     
@@ -202,6 +205,7 @@ public class SCGIRequest
     {
         // clear all state!
         this.input = null;
+        this.bodyInput = null;
         this.headers.clear();
         this.scgiVariables.clear();
         this.parameters.clear();
@@ -228,9 +232,17 @@ public class SCGIRequest
      * Accessors
      */
 
+    /**
+     * Get an input stream to read the request body
+     * @return
+     */
     public InputStream getInput()
     {
-        return input;
+        if (this.bodyInput == null)
+        {
+            this.bodyInput = new LengthLimitedSocketInputStream(this.contentLength, this.input);
+        }
+        return this.bodyInput;
     }
 
     public int getContentLength()
@@ -325,7 +337,12 @@ public class SCGIRequest
 
     public String getHeader(String name)
     {
-        return this.headers.get(name.toUpperCase());
+        return this.headers.get(cgifyHeaderName(name));
+    }
+    
+    private String cgifyHeaderName(String name)
+    {
+        return name.toUpperCase().replace('-', '_');
     }
 
     public Set<String> getHeaderNames()

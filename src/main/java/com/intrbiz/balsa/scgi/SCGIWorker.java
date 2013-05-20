@@ -1,28 +1,11 @@
 /*
- * Balsa SCGI
- * Copyright (c) 2012, Chris Ellis
- * All rights reserved.
+ * Balsa SCGI Copyright (c) 2012, Chris Ellis All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met: 
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer. 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution. 
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.intrbiz.balsa.scgi;
@@ -39,6 +22,10 @@ import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 
 /**
  * A worker of the SCGI Listener.
@@ -51,23 +38,36 @@ import org.apache.log4j.Logger;
 public class SCGIWorker implements Runnable
 {
     private static final Charset SCGI_CHARSET = Charset.forName("ISO-8859-1");
-    
+
     private final SCGIListener listener;
 
     private final BlockingQueue<Socket> runQueue;
 
     private final Thread thread;
-    
+
     private Logger logger = Logger.getLogger(this.getClass());
 
-    public SCGIWorker(SCGIListener listener, BlockingQueue<Socket> runQueue, ThreadFactory workerFactory)
+    private final Counter requests;
+
+    private final Timer requestDuration;
+
+    private final Timer requestHeaderParseDuration;
+    
+    private final Timer requestProcessDuration;
+
+    public SCGIWorker(SCGIListener listener, BlockingQueue<Socket> runQueue, ThreadFactory workerFactory, Timer requestDuration, Timer requestHeaderParseDuration, Timer requestProcessDuration)
     {
         super();
         this.listener = listener;
         this.runQueue = runQueue;
         this.thread = workerFactory.newThread(this);
+        // create our metrics
+        this.requests = Metrics.newCounter(SCGIWorker.class, "requests", this.thread.getName());
+        this.requestDuration = requestDuration;
+        this.requestHeaderParseDuration = requestHeaderParseDuration;
+        this.requestProcessDuration = requestProcessDuration;
     }
-    
+
     protected SCGIProcessor getProcessor()
     {
         return this.listener.getProcessor();
@@ -76,7 +76,7 @@ public class SCGIWorker implements Runnable
     public void run()
     {
         // Request and Response
-        SCGIRequest request = new SCGIRequest(); 
+        SCGIRequest request = new SCGIRequest();
         SCGIResponse response = new SCGIResponse();
         // The client
         Socket client;
@@ -86,36 +86,61 @@ public class SCGIWorker implements Runnable
             try
             {
                 client = this.runQueue.take();
+                this.requests.inc();
+                final TimerContext tCtx = this.requestDuration.time();
                 try
                 {
-                    request.activate();
-                    response.activate();
                     try
                     {
-                        InputStream input = new BufferedInputStream(client.getInputStream(), 1024);
-                        OutputStream output = new BufferedOutputStream(client.getOutputStream(), 8192);
-                        byte[] headers = this.readHeaders(input);
-                        this.parseHeaders(headers, request);
-                        this.readBodySeparator(input);
-                        // set the streams
-                        request.stream(input);
-                        response.stream(output);
-                        // process
-                        this.getProcessor().process(request, response);
+                        request.activate();
+                        response.activate();
+                        try
+                        {
+                            final TimerContext hpCtx = this.requestHeaderParseDuration.time();
+                            try
+                            {
+                                InputStream input = new BufferedInputStream(client.getInputStream(), 1024);
+                                OutputStream output = new BufferedOutputStream(client.getOutputStream(), 8192);
+                                byte[] headers = this.readHeaders(input);
+                                this.parseHeaders(headers, request);
+                                this.readBodySeparator(input);
+                                // set the streams
+                                request.stream(input);
+                                response.stream(output);
+                            }
+                            finally
+                            {
+                                hpCtx.stop();
+                            }
+                            // process
+                            final TimerContext rpCtx = this.requestProcessDuration.time();
+                            try
+                            {
+                                this.getProcessor().process(request, response);
+                            }
+                            finally
+                            {
+                                rpCtx.stop();
+                            }
+                        }
+                        finally
+                        {
+                            // close
+                            request.deactivate();
+                            response.deactivate();
+                            client.close();
+                        }
                     }
-                    finally
+                    catch (Throwable t)
                     {
-                        // close
-                        request.deactivate();
-                        response.deactivate();
-                        client.close();
+                        // A throwable should not reach here - Fatal!
+                        if (t instanceof OutOfMemoryError) logger.fatal("OUT OF MEMORY ERROR!");
+                        logger.fatal("Terminated request due to uncaught throwable while processing request!", t);
                     }
                 }
-                catch (Throwable t)
+                finally
                 {
-                    // A throwable should not reach here - Fatal!
-                    if (t instanceof OutOfMemoryError) logger.fatal("OUT OF MEMORY ERROR!");
-                    logger.fatal("Terminated request due to uncaught throwable while processing request!", t);
+                    tCtx.stop();
                 }
             }
             catch (InterruptedException e)
@@ -124,12 +149,12 @@ public class SCGIWorker implements Runnable
             }
         }
     }
-    
+
     public void start()
     {
         this.thread.start();
     }
-    
+
     public void await()
     {
         try

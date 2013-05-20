@@ -35,10 +35,14 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import com.intrbiz.balsa.SCGIException;
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
 
 /**
  * A simple 'pre-forked' SCGI server
@@ -71,6 +75,17 @@ public class SCGIListener implements Runnable
     private BlockingQueue<Socket> runQueue;
 
     private Logger logger = Logger.getLogger(SCGIListener.class);
+    
+    private final Counter accepts = Metrics.newCounter(SCGIListener.class, "accepts");
+    
+    /**
+     * A timer to instrument complete request processing time, shared over all workers
+     */
+    private final Timer requestDuration = Metrics.newTimer(SCGIListener.class, "request-duration", TimeUnit.MILLISECONDS, TimeUnit.MINUTES);
+    
+    private final Timer requestHeaderParseDuration = Metrics.newTimer(SCGIListener.class, "request-header-parse-duration", TimeUnit.MICROSECONDS, TimeUnit.MINUTES);
+    
+    private final Timer requestProcessDuration = Metrics.newTimer(SCGIListener.class, "request-process-duration", TimeUnit.MILLISECONDS, TimeUnit.MINUTES);
 
     public SCGIListener()
     {
@@ -179,7 +194,7 @@ public class SCGIListener implements Runnable
             this.workers = new SCGIWorker[this.getPoolSize()];
             for (int i = 0; i < this.workers.length; i++)
             {
-                this.workers[i] = new SCGIWorker(this, this.runQueue, this.workerFactory);
+                this.workers[i] = new SCGIWorker(this, this.runQueue, this.workerFactory, this.requestDuration, this.requestHeaderParseDuration, this.requestProcessDuration);
                 this.workers[i].start();
             }
             // listen
@@ -205,7 +220,9 @@ public class SCGIListener implements Runnable
             try
             {
                 // Place the socket onto the run queue
-                this.runQueue.offer(this.server.accept());
+                Socket client = this.server.accept();
+                this.accepts.inc();
+                this.runQueue.offer(client);
             }
             catch (SocketTimeoutException e)
             {
