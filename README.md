@@ -1,8 +1,6 @@
 Balsa SCGI
 ==========
-A simple SCGI listener, stripped down from the Balsa SCGI listener.
-
-Its a simple threaded, blocking IO SCGI server which maybe useful for other people.
+A simple SCGI listener, a simple threaded, blocking IO SCGI server which maybe useful for other people.
 
 
 License
