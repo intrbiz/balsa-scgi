@@ -33,7 +33,7 @@ import java.io.Writer;
 /**
  * HTML util writer
  */
-public class HTMLWriter extends Writer
+public class HTMLWriter extends Writer implements BalsaWriter
 {
     private Writer writer;
     
@@ -65,9 +65,10 @@ public class HTMLWriter extends Writer
         writer.write(str);
     }
     
-    public void writeEncoded(String str) throws IOException
+    public HTMLWriter writeEncoded(String str) throws IOException
     {
         htmlEncode(str, this);
+        return this;
     }
 
     public void write(String str, int off, int len) throws IOException
@@ -75,19 +76,22 @@ public class HTMLWriter extends Writer
         writer.write(str, off, len);
     }
 
-    public Writer append(CharSequence csq) throws IOException
+    public HTMLWriter append(CharSequence csq) throws IOException
     {
-        return writer.append(csq);
+        writer.append(csq);
+        return this;
     }
 
-    public Writer append(CharSequence csq, int start, int end) throws IOException
+    public HTMLWriter append(CharSequence csq, int start, int end) throws IOException
     {
-        return writer.append(csq, start, end);
+        writer.append(csq, start, end);
+        return this;
     }
 
-    public Writer append(char c) throws IOException
+    public HTMLWriter append(char c) throws IOException
     {
-        return writer.append(c);
+        writer.append(c);
+        return this;
     }
 
     public void flush() throws IOException
