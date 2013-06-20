@@ -22,8 +22,6 @@ import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
 
@@ -47,8 +45,6 @@ public class SCGIWorker implements Runnable
 
     private Logger logger = Logger.getLogger(this.getClass());
 
-    private final Counter requests;
-
     private final Timer requestDuration;
 
     private final Timer requestHeaderParseDuration;
@@ -61,8 +57,6 @@ public class SCGIWorker implements Runnable
         this.listener = listener;
         this.runQueue = runQueue;
         this.thread = workerFactory.newThread(this);
-        // create our metrics
-        this.requests = Metrics.newCounter(SCGIWorker.class, "requests", this.thread.getName());
         this.requestDuration = requestDuration;
         this.requestHeaderParseDuration = requestHeaderParseDuration;
         this.requestProcessDuration = requestProcessDuration;
@@ -86,7 +80,6 @@ public class SCGIWorker implements Runnable
             try
             {
                 client = this.runQueue.take();
-                this.requests.inc();
                 final TimerContext tCtx = this.requestDuration.time();
                 try
                 {

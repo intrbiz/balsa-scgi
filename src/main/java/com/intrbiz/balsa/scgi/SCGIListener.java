@@ -81,11 +81,11 @@ public class SCGIListener implements Runnable
     /**
      * A timer to instrument complete request processing time, shared over all workers
      */
-    private final Timer requestDuration = Metrics.newTimer(SCGIListener.class, "request-duration", TimeUnit.MILLISECONDS, TimeUnit.MINUTES);
+    private final Timer requestDuration = Metrics.newTimer(SCGIListener.class, "request-duration", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     
-    private final Timer requestHeaderParseDuration = Metrics.newTimer(SCGIListener.class, "request-header-parse-duration", TimeUnit.MICROSECONDS, TimeUnit.MINUTES);
+    private final Timer requestHeaderParseDuration = Metrics.newTimer(SCGIListener.class, "request-header-parse-duration", TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
     
-    private final Timer requestProcessDuration = Metrics.newTimer(SCGIListener.class, "request-process-duration", TimeUnit.MILLISECONDS, TimeUnit.MINUTES);
+    private final Timer requestProcessDuration = Metrics.newTimer(SCGIListener.class, "request-process-duration", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
 
     public SCGIListener()
     {
