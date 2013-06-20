@@ -235,8 +235,9 @@ public class SCGIResponse
     {
         this.redirect(permanent);
         this.header("Location", location);
+        // TODO should we flush here (it'll get done when the processing is finished)?
         // flush the headers
-        this.sendHeaders();
+        // this.sendHeaders();
     }
 
     public List<String> getHeaders()
@@ -306,6 +307,8 @@ public class SCGIResponse
 
     public void flush() throws IOException
     {
+        this.sendHeaders();
+        //
         if (this.sentHeaders)
         {
             if (this.htmlWriter != null)
