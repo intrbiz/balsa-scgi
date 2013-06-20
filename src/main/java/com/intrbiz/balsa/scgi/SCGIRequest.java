@@ -75,6 +75,8 @@ public class SCGIRequest
     private int remotePort;
 
     private String requestMethod;
+    
+    private String requestScheme;
 
     private String requestUri;
 
@@ -162,6 +164,10 @@ public class SCGIRequest
         {
             this.requestMethod = value;
         }
+        else if ("REQUEST_SCHEME".equals(name))
+        {
+            this.requestScheme = value;
+        }
         else if ("REQUEST_URI".equals(name))
         {
             this.requestUri = value;
@@ -220,6 +226,7 @@ public class SCGIRequest
         this.remoteAddress = null;
         this.remotePort = 0;
         this.requestMethod = null;
+        this.requestScheme = null;
         this.requestUri = null;
         this.pathInfo = null;
         this.queryString = null;
@@ -298,6 +305,11 @@ public class SCGIRequest
     public String getRequestMethod()
     {
         return requestMethod;
+    }
+    
+    public String getRequestScheme()
+    {
+        return requestScheme;
     }
 
     public String getRequestUri()
@@ -431,6 +443,7 @@ public class SCGIRequest
         sb.append("REMOTE_ADDR: ").append(this.remoteAddress).append("\r\n");
         sb.append("REMOTE_PORT: ").append(this.remotePort).append("\r\n");
         sb.append("REQUEST_METHOD: ").append(this.requestMethod).append("\r\n");
+        sb.append("REQUEST_SCHEME: ").append(this.requestScheme).append("\r\n");
         sb.append("REQUEST_URI: ").append(this.requestUri).append("\r\n");
         sb.append("PATH_INFO: ").append(this.pathInfo).append("\r\n");
         sb.append("QUERY_STRING: ").append(this.queryString).append("\r\n");
