@@ -36,6 +36,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import com.intrbiz.balsa.http.HTTP.SCGI;
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
@@ -120,75 +121,75 @@ public class SCGIRequest
         {
             this.headers.put(name.substring(5), value);
         }
-        else if ("CONTENT_LENGTH".equals(name))
+        else if (SCGI.CONTENT_LENGTH.equals(name))
         {
             this.contentLength = Integer.parseInt(value);
         }
-        else if ("CONTENT_TYPE".equals(name))
+        else if (SCGI.CONTENT_TYPE.equals(name))
         {
             this.contentType = value;
         }
-        else if ("SCGI".equals(name))
+        else if (SCGI.SCGI.equals(name))
         {
             this.version = value;
         }
-        else if ("SERVER_SOFTWARE".equals(name))
+        else if (SCGI.SERVER_SOFTWARE.equals(name))
         {
             this.serverSoftware = value;
         }
-        else if ("SERVER_NAME".equals(name))
+        else if (SCGI.SERVER_NAME.equals(name))
         {
             this.serverName = value;
         }
-        else if ("SERVER_ADDR".equals(name))
+        else if (SCGI.SERVER_ADDR.equals(name))
         {
             this.serverAddress = value;
         }
-        else if ("SERVER_PORT".equals(name))
+        else if (SCGI.SERVER_PORT.equals(name))
         {
             this.serverPort = Integer.parseInt(value);
         }
-        else if ("SERVER_PROTOCOL".equals(name))
+        else if (SCGI.SERVER_PROTOCOL.equals(name))
         {
             this.serverProtocol = value;
         }
-        else if ("REMOTE_ADDR".equals(name))
+        else if (SCGI.REMOTE_ADDR.equals(name))
         {
             this.remoteAddress = value;
         }
-        else if ("REMOTE_PORT".equals(name))
+        else if (SCGI.REMOTE_PORT.equals(name))
         {
             this.remotePort = Integer.parseInt(value);
         }
-        else if ("REQUEST_METHOD".equals(name))
+        else if (SCGI.REQUEST_METHOD.equals(name))
         {
             this.requestMethod = value;
         }
-        else if ("REQUEST_SCHEME".equals(name))
+        else if (SCGI.REQUEST_SCHEME.equals(name))
         {
             this.requestScheme = value;
         }
-        else if ("REQUEST_URI".equals(name))
+        else if (SCGI.REQUEST_URI.equals(name))
         {
             this.requestUri = value;
         }
-        else if ("PATH_INFO".equals(name))
+        else if (SCGI.PATH_INFO.equals(name))
         {
             this.pathInfo = value;
         }
-        else if ("QUERY_STRING".equals(name))
+        else if (SCGI.QUERY_STRING.equals(name))
         {
             this.queryString = value;
         }
-        else if ("SCRIPT_NAME".equals(name))
+        else if (SCGI.SCRIPT_NAME.equals(name))
         {
             this.scriptName = value;
         }
-        else if ("SCRIPT_FILENAME".equals(name))
+        else if (SCGI.SCRIPT_FILENAME.equals(name))
         {
             this.scriptFileName = value;
         }
-        else if ("DOCUMENT_ROOT".equals(name))
+        else if (SCGI.DOCUMENT_ROOT.equals(name))
         {
             this.documentRoot = value;
         }
@@ -432,24 +433,24 @@ public class SCGIRequest
         StringBuilder sb = new StringBuilder();
         sb.append(this.getRequestMethod()).append(" ").append(this.getPathInfo()).append("\r\n\r\n");
         //
-        sb.append("CONTENT_LENGTH: ").append(this.contentLength).append("\r\n");
-        sb.append("CONTENT_TYPE: ").append(this.contentType).append("\r\n");
-        sb.append("SCGI: ").append(this.version).append("\r\n");
-        sb.append("SERVER_SOFTWARE: ").append(this.serverSoftware).append("\r\n");
-        sb.append("SERVER_NAME: ").append(this.serverName).append("\r\n");
-        sb.append("SERVER_ADDR: ").append(this.serverAddress).append("\r\n");
-        sb.append("SERVER_PORT: ").append(this.serverPort).append("\r\n");
-        sb.append("SERVER_PROTOCOL: ").append(this.serverProtocol).append("\r\n");
-        sb.append("REMOTE_ADDR: ").append(this.remoteAddress).append("\r\n");
-        sb.append("REMOTE_PORT: ").append(this.remotePort).append("\r\n");
-        sb.append("REQUEST_METHOD: ").append(this.requestMethod).append("\r\n");
-        sb.append("REQUEST_SCHEME: ").append(this.requestScheme).append("\r\n");
-        sb.append("REQUEST_URI: ").append(this.requestUri).append("\r\n");
-        sb.append("PATH_INFO: ").append(this.pathInfo).append("\r\n");
-        sb.append("QUERY_STRING: ").append(this.queryString).append("\r\n");
-        sb.append("SCRIPT_NAME: ").append(this.scriptName).append("\r\n");
-        sb.append("SCRIPT_FILENAME: ").append(this.scriptFileName).append("\r\n");
-        sb.append("DOCUMENT_ROOT: ").append(this.documentRoot).append("\r\n");
+        sb.append(SCGI.CONTENT_LENGTH).append(": ").append(this.contentLength).append("\r\n");
+        sb.append(SCGI.CONTENT_TYPE).append(": ").append(this.contentType).append("\r\n");
+        sb.append(SCGI.SCGI).append(": ").append(this.version).append("\r\n");
+        sb.append(SCGI.SERVER_SOFTWARE).append(": ").append(this.serverSoftware).append("\r\n");
+        sb.append(SCGI.SERVER_NAME).append(": ").append(this.serverName).append("\r\n");
+        sb.append(SCGI.SERVER_ADDR).append(": ").append(this.serverAddress).append("\r\n");
+        sb.append(SCGI.SERVER_PORT).append(": ").append(this.serverPort).append("\r\n");
+        sb.append(SCGI.SERVER_PROTOCOL).append(": ").append(this.serverProtocol).append("\r\n");
+        sb.append(SCGI.REMOTE_ADDR).append(": ").append(this.remoteAddress).append("\r\n");
+        sb.append(SCGI.REMOTE_PORT).append(": ").append(this.remotePort).append("\r\n");
+        sb.append(SCGI.REQUEST_METHOD).append(": ").append(this.requestMethod).append("\r\n");
+        sb.append(SCGI.REQUEST_SCHEME).append(": ").append(this.requestScheme).append("\r\n");
+        sb.append(SCGI.REQUEST_URI).append(": ").append(this.requestUri).append("\r\n");
+        sb.append(SCGI.PATH_INFO).append(": ").append(this.pathInfo).append("\r\n");
+        sb.append(SCGI.QUERY_STRING).append(": ").append(this.queryString).append("\r\n");
+        sb.append(SCGI.SCRIPT_NAME).append(": ").append(this.scriptName).append("\r\n");
+        sb.append(SCGI.SCRIPT_FILENAME).append(": ").append(this.scriptFileName).append("\r\n");
+        sb.append(SCGI.DOCUMENT_ROOT).append(": ").append(this.documentRoot).append("\r\n");
         //
         sb.append("\r\nVariables:\r\n");
         for (Entry<String, String> var : this.getVariables().entrySet())
