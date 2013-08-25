@@ -147,6 +147,17 @@ public class SCGIClient
         this.setVar(HTTP.SCGI.PATH_INFO, uri);
         return this;
     }
+    
+    public PostFormParametersEntity post(String uri)
+    {
+        this.setVar(HTTP.SCGI.REQUEST_METHOD, "POST");
+        this.setVar(HTTP.SCGI.REQUEST_URI, uri);
+        this.setVar(HTTP.SCGI.PATH_INFO, uri);
+        this.setVar(HTTP.SCGI.CONTENT_TYPE, HTTP.ContentTypes.APPLICATION_FORM_URLENCODED);
+        PostFormParametersEntity p = new PostFormParametersEntity(this);
+        this.setContent(p);
+        return p;
+    }
 
     public QueryStringBuilder queryString()
     {
@@ -187,7 +198,12 @@ public class SCGIClient
         OutputStream out = new BufferedOutputStream(sock.getOutputStream());
         // send the vars
         this.writeNetString(this.assembleHeaders(), out);
+        out.flush();
         // send the content
+        if (this.content != null)
+        {
+            this.content.writeTo(out);
+        }
         out.flush();
         // return the response
         return new SCGIClientResponse(sock);
@@ -269,7 +285,7 @@ public class SCGIClient
             {
                 this.queryString.append(URLEncoder.encode(name, HTTP.Charsets.UTF8.name()));
                 this.queryString.append("=");
-                this.queryString.append(URLEncoder.encode(name, HTTP.Charsets.UTF8.name()));
+                this.queryString.append(URLEncoder.encode(value, HTTP.Charsets.UTF8.name()));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -287,6 +303,48 @@ public class SCGIClient
         public String toString()
         {
             return this.queryString.toString();
+        }
+    }
+    
+    public static class PostFormParametersEntity implements ContentEntity
+    {
+        private final SCGIClient client;
+        
+        private final QueryStringBuilder parameters = new QueryStringBuilder(null);
+        
+        public PostFormParametersEntity(SCGIClient client)
+        {
+            super();
+            this.client = client;
+        }
+        
+        public SCGIClient complete()
+        {
+            return this.client;
+        }
+
+        public PostFormParametersEntity param(String name)
+        {
+            parameters.param(name);
+            return this;
+        }
+
+        public PostFormParametersEntity param(String name, String value)
+        {
+            parameters.param(name, value);
+            return this;
+        }
+
+        @Override
+        public int getLength()
+        {
+            return this.parameters.toString().getBytes(HTTP.Charsets.UTF8).length;
+        }
+
+        @Override
+        public void writeTo(OutputStream out) throws IOException
+        {
+            out.write(this.parameters.toString().getBytes(HTTP.Charsets.UTF8));
         }
     }
 
