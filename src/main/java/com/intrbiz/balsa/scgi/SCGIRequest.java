@@ -213,9 +213,11 @@ public class SCGIRequest
         // clear all state!
         this.input = null;
         this.bodyInput = null;
+        this.body = null;
         this.headers.clear();
         this.scgiVariables.clear();
         this.parameters.clear();
+        this.cookies.clear();
         this.contentLength = 0;
         this.contentType = null;
         this.version = null;
@@ -234,6 +236,8 @@ public class SCGIRequest
         this.scriptName = null;
         this.scriptFileName = null;
         this.documentRoot = null;
+        this.processingStart = 0;
+        this.processingEnd = 0;
     }
 
     /*
