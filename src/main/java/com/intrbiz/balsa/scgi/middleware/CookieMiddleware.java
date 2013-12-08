@@ -27,13 +27,13 @@
 
 package com.intrbiz.balsa.scgi.middleware;
 
-import static com.intrbiz.balsa.util.Util.isEmpty;
+import static com.intrbiz.balsa.util.Util.*;
 
 import java.io.IOException;
 
 import com.intrbiz.balsa.scgi.SCGIRequest;
 import com.intrbiz.balsa.scgi.SCGIResponse;
-import com.intrbiz.balsa.util.Util;
+import com.intrbiz.balsa.util.CookiesParser;
 
 /**
  * Parse cookies
@@ -46,7 +46,7 @@ public class CookieMiddleware extends AbstractMiddleware
     public boolean before(SCGIRequest request, SCGIResponse response) throws IOException
     {
         String cookies = request.getHeader(COOKIES_HEADER);
-        if (! isEmpty(cookies)) Util.parseCookies(cookies, request);
+        if (! isEmpty(cookies)) CookiesParser.parseCookies(cookies, request);
         return true;
     }
 

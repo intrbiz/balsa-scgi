@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 
 import com.intrbiz.balsa.scgi.SCGIRequest;
 import com.intrbiz.balsa.scgi.SCGIResponse;
-import com.intrbiz.balsa.util.Util;
+import com.intrbiz.balsa.util.QueryStringParser;
 
 /**
  * Parse the query string
@@ -47,7 +47,7 @@ public class QueryStringMiddleware extends AbstractMiddleware
     public boolean before(SCGIRequest request, SCGIResponse response) throws IOException
     {
         // parse the query string
-        Util.parseQueryString(request.getQueryString(), request);
+        QueryStringParser.parseQueryString(request.getQueryString(), request);
         // parse a posted query string
         if (WWW_FORM_URLENCODED.equals(request.getContentType()))
         {
@@ -55,7 +55,7 @@ public class QueryStringMiddleware extends AbstractMiddleware
             byte[] body = this.readBodyBytes(request);
             // parse the parameters
             String postParameters = new String(body, SCGI_CHARSET);
-            Util.parseQueryString(postParameters, request);
+            QueryStringParser.parseQueryString(postParameters, request);
         }
         // continue processing the request
         return true;

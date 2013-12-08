@@ -40,7 +40,9 @@ import com.intrbiz.balsa.http.HTTP.SCGI;
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
+import com.intrbiz.balsa.util.CookiesParser.CookieSet;
 import com.intrbiz.balsa.util.LengthLimitedSocketInputStream;
+import com.intrbiz.balsa.util.QueryStringParser.ParameterSet;
 
 
 /**
@@ -51,7 +53,7 @@ import com.intrbiz.balsa.util.LengthLimitedSocketInputStream;
  * It allows access to the input stream, but provides no processing of them
  * 
  */
-public class SCGIRequest
+public class SCGIRequest implements ParameterSet, CookieSet
 {
     private Logger logger = Logger.getLogger(SCGIRequest.class);
     
