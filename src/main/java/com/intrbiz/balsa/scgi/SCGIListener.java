@@ -35,14 +35,14 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 import com.intrbiz.balsa.SCGIException;
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
+import com.intrbiz.gerald.source.IntelligenceSource;
+import com.intrbiz.gerald.witchcraft.Witchcraft;
 
 /**
  * A simple 'pre-forked' SCGI server
@@ -76,20 +76,23 @@ public class SCGIListener implements Runnable
 
     private Logger logger = Logger.getLogger(SCGIListener.class);
     
-    private final Counter accepts = Metrics.newCounter(SCGIListener.class, "accepts");
+    private final Counter accepts;
     
-    /**
-     * A timer to instrument complete request processing time, shared over all workers
-     */
-    private final Timer requestDuration = Metrics.newTimer(SCGIListener.class, "request-duration", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+    private final Timer requestDuration;
     
-    private final Timer requestHeaderParseDuration = Metrics.newTimer(SCGIListener.class, "request-header-parse-duration", TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer requestHeaderParseDuration;
     
-    private final Timer requestProcessDuration = Metrics.newTimer(SCGIListener.class, "request-process-duration", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+    private final Timer requestProcessDuration;
 
     public SCGIListener()
     {
         super();
+        // setup the metrics
+        IntelligenceSource source = Witchcraft.get().source("com.intrbiz.balsa");
+        this.accepts                    = source.getRegistry().counter(Witchcraft.name(SCGIListener.class, "accepts"));
+        this.requestDuration            = source.getRegistry().timer(  Witchcraft.name(SCGIListener.class, "request-duration"));
+        this.requestHeaderParseDuration = source.getRegistry().timer(  Witchcraft.name(SCGIListener.class, "request-header-parse-duration"));
+        this.requestProcessDuration     = source.getRegistry().timer(  Witchcraft.name(SCGIListener.class, "request-process-duration"));
     }
 
     public SCGIListener(int port)

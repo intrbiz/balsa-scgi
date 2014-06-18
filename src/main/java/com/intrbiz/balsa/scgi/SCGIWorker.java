@@ -22,8 +22,7 @@ import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Timer;
 
 /**
  * A worker of the SCGI Listener.
@@ -80,7 +79,7 @@ public class SCGIWorker implements Runnable
             try
             {
                 client = this.runQueue.take();
-                final TimerContext tCtx = this.requestDuration.time();
+                final Timer.Context tCtx = this.requestDuration.time();
                 try
                 {
                     try
@@ -89,7 +88,7 @@ public class SCGIWorker implements Runnable
                         response.activate();
                         try
                         {
-                            final TimerContext hpCtx = this.requestHeaderParseDuration.time();
+                            final Timer.Context hpCtx = this.requestHeaderParseDuration.time();
                             try
                             {
                                 InputStream input = new BufferedInputStream(client.getInputStream(), 1024);
@@ -106,7 +105,7 @@ public class SCGIWorker implements Runnable
                                 hpCtx.stop();
                             }
                             // process
-                            final TimerContext rpCtx = this.requestProcessDuration.time();
+                            final Timer.Context rpCtx = this.requestProcessDuration.time();
                             try
                             {
                                 this.getProcessor().process(request, response);
