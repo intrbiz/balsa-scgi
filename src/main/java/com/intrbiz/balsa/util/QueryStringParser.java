@@ -99,12 +99,12 @@ public class QueryStringParser
                 {
                     if (forceList)
                     {
-                        request.addParameter(jparam);
+                        // force a list
+                        request.addParameter(new ListParameter(name, jparam));
                     }
                     else
                     {
-                        // force a list
-                        request.addParameter(new ListParameter(name, jparam));
+                        request.addParameter(jparam);
                     }
                 }
             }
