@@ -27,6 +27,10 @@
 
 package com.intrbiz.balsa.parameter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 /**
  * A simple parameter
@@ -40,6 +44,12 @@ public final class StringParameter extends AbstractParameter
         super(name);
         this.value = value;
     }
+    
+    public StringParameter(String name, int index, String value)
+    {
+        super(name, index);
+        this.value = value;
+    }
 
     public String getStringValue()
     {
@@ -49,5 +59,19 @@ public final class StringParameter extends AbstractParameter
     public Object getValue()
     {
         return this.value;
+    }
+    
+    public List<Parameter> getListValue()
+    {
+        List<Parameter> ret = new ArrayList<Parameter>();
+        ret.add(this);
+        return ret;
+    }
+    
+    public List<String> getStringListValue()
+    {
+        List<String> ret = new ArrayList<String>();
+        ret.add(this.value);
+        return ret;
     }
 }

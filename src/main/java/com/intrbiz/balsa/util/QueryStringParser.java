@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
@@ -48,7 +50,35 @@ public class QueryStringParser
                 // TODO: Charset
                 String name = URLDecoder.decode(parameter.substring(0, pos), "UTF-8");
                 String value = URLDecoder.decode(parameter.substring(pos + 1), "UTF-8");
-                Parameter jparam = new StringParameter(name, value);
+                int index = -1;
+                boolean forceList = false;
+                boolean indexedList = false;
+                // handle array parameters in the form of name[index]
+                // parameters ending in []
+                if (name.endsWith("]"))
+                {
+                    int sepIdx = name.lastIndexOf('[');
+                    if (sepIdx > 0)
+                    {
+                        try
+                        {
+                            String strIndex = name.substring(sepIdx + 1, name.length() - 1);
+                            if (! Util.isEmpty(strIndex))
+                            {
+                                index = Integer.parseInt(strIndex);
+                                indexedList = true;
+                            }
+                            name = name.substring(0, sepIdx);
+                            forceList = true;
+                        }
+                        catch (NumberFormatException e)
+                        {
+                            Logger.getLogger(QueryStringParser.class).debug("Failed to decode array parameter index, of '" + name + "'");
+                        }
+                    }
+                }
+                // create the parameter
+                Parameter jparam = new StringParameter(name, index, value);
                 // add
                 if (request.containsParameter(name))
                 {
@@ -56,15 +86,26 @@ public class QueryStringParser
                     if (fparam instanceof ListParameter)
                     {
                         ((ListParameter) fparam).addValue(jparam);
+                        if (indexedList) ((ListParameter) fparam).sort();
                     }
                     else
                     {
-                        request.addParameter(new ListParameter(name, fparam, jparam));
+                        ListParameter lparam = new ListParameter(name, fparam, jparam);
+                        if (indexedList) lparam.sort();
+                        request.addParameter(lparam);
                     }
                 }
                 else
                 {
-                    request.addParameter(jparam);
+                    if (forceList)
+                    {
+                        request.addParameter(jparam);
+                    }
+                    else
+                    {
+                        // force a list
+                        request.addParameter(new ListParameter(name, jparam));
+                    }
                 }
             }
             catch (UnsupportedEncodingException e)

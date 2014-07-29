@@ -34,15 +34,28 @@ import java.util.List;
 public abstract class AbstractParameter implements Parameter
 {
     private final String name;
+    
+    private final int index;
 
-    public AbstractParameter(String name)
+    public AbstractParameter(String name, int index)
     {
         this.name = name;
+        this.index = index;
+    }
+    
+    public AbstractParameter(String name)
+    {
+        this(name, -1);
     }
 
     public String getName()
     {
         return name;
+    }
+    
+    public int getIndex()
+    {
+        return this.index;
     }
 
     public Object getValue()
@@ -58,6 +71,26 @@ public abstract class AbstractParameter implements Parameter
     public List<Parameter> getListValue()
     {
         return null;
+    }
+    
+    public Parameter getListValue(int index)
+    {
+        return null;
+    }
+    
+    public List<String> getStringListValue()
+    {
+        return null;
+    }
+    
+    public String getStringListValue(int index)
+    {
+        return null;
+    }
+    
+    public int getLength()
+    {
+        return 0;
     }
 
     public byte[] getBytesValue()
@@ -103,4 +136,13 @@ public abstract class AbstractParameter implements Parameter
         return true;
     }
 
+    @Override
+    public int compareTo(Parameter o)
+    {
+        if (this.name.equals(o.getName()))
+        {
+            return Integer.compare(this.index, o.getIndex());
+        }
+        return this.name.compareTo(o.getName());
+    }
 }

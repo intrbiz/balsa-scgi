@@ -27,7 +27,8 @@
 
 package com.intrbiz.balsa.parameter;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public final class ListParameter extends AbstractParameter
 {
-    private final List<Parameter> value = new LinkedList<Parameter>();
+    private final ArrayList<Parameter> value = new ArrayList<Parameter>();
 
     public ListParameter(String name)
     {
@@ -53,10 +54,53 @@ public final class ListParameter extends AbstractParameter
             }
         }
     }
+    
+    public String getStringValue()
+    {
+        return null;
+    }
 
     public List<Parameter> getListValue()
     {
         return this.value;
+    }
+    
+    public Parameter getListValue(int index)
+    {
+        for (Parameter param : this.value)
+        {
+            if (param.getIndex() == index)
+                return param;
+        }
+        return null;
+    }
+    
+    public List<String> getStringListValue()
+    {
+        ArrayList<String> ret = new ArrayList<String>();
+        for (Parameter param : this.value)
+        {
+            if (param instanceof StringParameter)
+            {
+                ret.add(param.getStringValue());
+            }
+        }
+        return ret;
+    }
+    
+    public String getStringListValue(int index)
+    {
+        Parameter param = this.getListValue(index);
+        if (param instanceof StringParameter)
+        {
+            return param.getStringValue();
+        }
+        return null;
+    }
+    
+    public int getLength()
+    {
+        return this.value.size();
     }
 
     public Object getValue()
@@ -67,5 +111,10 @@ public final class ListParameter extends AbstractParameter
     public void addValue(Parameter parameter)
     {
         this.value.add(parameter);
+    }
+    
+    public void sort()
+    {
+        Collections.sort(this.value);
     }
 }

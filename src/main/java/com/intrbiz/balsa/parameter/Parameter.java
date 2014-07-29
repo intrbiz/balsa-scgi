@@ -33,9 +33,11 @@ import java.util.List;
 /**
  * A request parameter
  */
-public interface Parameter
+public interface Parameter extends Comparable<Parameter>
 {   
     String getName();
+    
+    int getIndex();
     
     Object getValue();
     
@@ -44,6 +46,14 @@ public interface Parameter
     
     /* Helpers for lists */
     List<Parameter> getListValue();
+    
+    Parameter getListValue(int index);
+    
+    List<String> getStringListValue();
+    
+    String getStringListValue(int index);
+    
+    int getLength();
     
     /* Helpers for files */
     byte[] getBytesValue();
