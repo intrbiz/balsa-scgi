@@ -399,6 +399,12 @@ public class SCGIRequest implements ParameterSet, CookieSet
         this.parameters.put(parameter.getName(), parameter);
     }
 
+    @Override
+    public void removeParameter(String name)
+    {
+        this.parameters.remove(name);
+    }
+
     public Set<String> getParameterNames()
     {
         return this.parameters.keySet();

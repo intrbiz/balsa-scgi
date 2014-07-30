@@ -30,6 +30,12 @@ public interface ParameterSet
      * @param parameter the parameter to add
      */
     void addParameter(Parameter parameter);
+    
+    /**
+     * Remove a parameter
+     * @param parameter the parameter name to remove 
+     */
+    void removeParameter(String name);
 
     /**
      * Get all the names of all parameters contained in this set
