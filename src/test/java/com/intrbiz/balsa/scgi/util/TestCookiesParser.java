@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.intrbiz.balsa.util.CookieSet;
 import com.intrbiz.balsa.util.CookiesParser;
-import com.intrbiz.balsa.util.CookiesParser.CookieSet;
 
 public class TestCookiesParser
 {

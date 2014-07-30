@@ -34,11 +34,4 @@ public class CookiesParser
         int pos = cookie.indexOf("=");
         if (pos != -1) request.cookie(cookie.substring(0, pos), cookie.substring(pos + 1));
     }
-    
-    public static interface CookieSet
-    {
-        String cookie(String name);
-
-        void cookie(String name, String value);
-    }
 }

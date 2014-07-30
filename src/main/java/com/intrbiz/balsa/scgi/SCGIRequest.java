@@ -40,7 +40,7 @@ import com.intrbiz.balsa.http.HTTP.SCGI;
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
-import com.intrbiz.balsa.util.CookiesParser.CookieSet;
+import com.intrbiz.balsa.util.CookieSet;
 import com.intrbiz.balsa.util.LengthLimitedSocketInputStream;
 import com.intrbiz.balsa.util.ParameterSet;
 
