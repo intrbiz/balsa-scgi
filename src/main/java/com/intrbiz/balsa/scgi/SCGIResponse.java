@@ -43,13 +43,14 @@ import com.intrbiz.balsa.http.HTTP.Charsets;
 import com.intrbiz.balsa.http.HTTP.ContentTypes;
 import com.intrbiz.balsa.http.HTTP.Expires;
 import com.intrbiz.balsa.http.HTTP.HTTPStatus;
+import com.intrbiz.balsa.util.CookieBuilder;
 import com.intrbiz.balsa.util.HTMLWriter;
 import com.intrbiz.balsa.util.SocketOutputStream;
 
 public class SCGIResponse
 {
     // Thu, 01 Jan 1970 00:00:00 GMT
-    public static final SimpleDateFormat HEADER_DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    public final SimpleDateFormat HEADER_DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     private OutputStream output;
 
@@ -243,6 +244,24 @@ public class SCGIResponse
     public List<String> getHeaders()
     {
         return headers;
+    }
+    
+    public CookieBuilder<SCGIResponse> setCookie()
+    {
+        return new CookieBuilder<SCGIResponse>()
+        {
+            @Override
+            public SCGIResponse set()
+            {
+                header("Set-Cookie", this.build());
+                return SCGIResponse.this;
+            }
+        };
+    }
+    
+    public CookieBuilder<SCGIResponse> cookie()
+    {
+        return this.setCookie();
     }
 
     public void sendHeaders() throws IOException
