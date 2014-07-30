@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -51,6 +52,24 @@ public class TestCookiesParser
         public void cookie(String name, String value)
         {
             this.cookies.put(name, value);
+        }
+
+        @Override
+        public Map<String, String> cookies()
+        {
+            return this.cookies;
+        }
+
+        @Override
+        public Set<String> cookieNames()
+        {
+            return this.cookies.keySet();
+        }
+
+        @Override
+        public void removeCookie(String name)
+        {
+            this.cookies.remove(name);
         }
     }
 }

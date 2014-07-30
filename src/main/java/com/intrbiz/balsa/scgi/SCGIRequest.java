@@ -424,6 +424,24 @@ public class SCGIRequest implements ParameterSet, CookieSet
         this.cookies.put(name, value);
     }
 
+    @Override
+    public Map<String, String> cookies()
+    {
+        return this.cookies;
+    }
+
+    @Override
+    public Set<String> cookieNames()
+    {
+        return this.cookies.keySet();
+    }
+
+    @Override
+    public void removeCookie(String name)
+    {
+        this.cookies.remove(name);
+    }
+
     public Object getBody()
     {
         return body;
