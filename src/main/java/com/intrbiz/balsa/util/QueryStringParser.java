@@ -2,9 +2,6 @@ package com.intrbiz.balsa.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +9,9 @@ import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
 
+/**
+ * Parse HTTP query strings
+ */
 public class QueryStringParser
 {
     /**
@@ -112,20 +112,5 @@ public class QueryStringParser
             {
             }
         }
-    }
-    
-    public static interface ParameterSet
-    {
-        Map<String, Parameter> getParameters();
-
-        Parameter getParameter(String name);
-
-        void addParameter(Parameter parameter);
-
-        Set<String> getParameterNames();
-
-        Collection<Parameter> getParameterValues();
-
-        boolean containsParameter(String name);
     }
 }

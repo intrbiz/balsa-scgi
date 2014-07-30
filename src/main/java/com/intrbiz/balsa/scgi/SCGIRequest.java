@@ -42,7 +42,7 @@ import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
 import com.intrbiz.balsa.util.CookiesParser.CookieSet;
 import com.intrbiz.balsa.util.LengthLimitedSocketInputStream;
-import com.intrbiz.balsa.util.QueryStringParser.ParameterSet;
+import com.intrbiz.balsa.util.ParameterSet;
 
 
 /**

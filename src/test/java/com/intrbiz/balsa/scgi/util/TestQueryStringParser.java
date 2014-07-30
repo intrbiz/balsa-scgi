@@ -14,8 +14,8 @@ import org.junit.Test;
 import com.intrbiz.balsa.parameter.ListParameter;
 import com.intrbiz.balsa.parameter.Parameter;
 import com.intrbiz.balsa.parameter.StringParameter;
+import com.intrbiz.balsa.util.ParameterSet;
 import com.intrbiz.balsa.util.QueryStringParser;
-import com.intrbiz.balsa.util.QueryStringParser.ParameterSet;
 
 public class TestQueryStringParser
 {
