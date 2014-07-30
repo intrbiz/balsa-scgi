@@ -17,7 +17,7 @@ public class CookiesParser
             while ((pos = cookies.indexOf("; ", spos)) != -1)
             {
                 parseCookie(cookies.substring(spos, pos), request);
-                spos = pos + 1;
+                spos = pos + 2;
             }
             parseCookie(cookies.substring(spos), request);
         }
