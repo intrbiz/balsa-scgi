@@ -172,6 +172,7 @@ public abstract class CookieBuilder<T>
             sb.append("; Expires=");
             sb.append(COOKIE_DATE_FORMAT.format(this.expires));
         }
+        sb.append(";");
         return sb.toString();
     }
     

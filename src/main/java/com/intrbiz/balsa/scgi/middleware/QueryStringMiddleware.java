@@ -49,7 +49,7 @@ public class QueryStringMiddleware extends AbstractMiddleware
         // parse the query string
         QueryStringParser.parseQueryString(request.getQueryString(), request);
         // parse a posted query string
-        if (WWW_FORM_URLENCODED.equals(request.getContentType()))
+        if (request.getContentType() != null && request.getContentType().startsWith(WWW_FORM_URLENCODED))
         {
             // buffer the request body in
             byte[] body = this.readBodyBytes(request);
