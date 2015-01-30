@@ -66,14 +66,13 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.13</version>
+			<version>1.2.14</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intrbiz.gerald</groupId>
 			<artifactId>gerald-witchcraft</artifactId>
-			<version>1.0.0-rc-4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
